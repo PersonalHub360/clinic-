@@ -1,0 +1,133 @@
+.room-occupancy {
+  min-height: 200px;
+}
+
+.more-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.more-btn:hover {
+  background: #f1f5f9;
+}
+
+.more-icon {
+  width: 20px;
+  height: 20px;
+  color: #64748b;
+}
+
+.occupancy-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.occupancy-main {
+  text-align: center;
+}
+
+.occupancy-number {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.occupancy-change {
+  font-size: 14px;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.room-types {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.room-type {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.room-icon-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.room-icon-container.general {
+  background: #ecfdf5;
+}
+
+.room-icon-container.private {
+  background: #eff6ff;
+}
+
+.room-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.room-icon-container.general .room-icon {
+  color: #10b981;
+}
+
+.room-icon-container.private .room-icon {
+  color: #3b82f6;
+}
+
+.room-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-label {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.room-count {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .occupancy-number {
+    font-size: 36px;
+  }
+  
+  .room-type {
+    padding: 10px;
+  }
+  
+  .room-icon-container {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .room-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
