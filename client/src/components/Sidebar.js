@@ -14,29 +14,37 @@ import {
 } from 'lucide-react';
 import './Sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ currentPage, onPageChange }) => {
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', active: true },
-    { icon: Users, label: 'Patients' },
-    { icon: Calendar, label: 'Appointment' },
-    { icon: CreditCard, label: 'Payments' },
-    { icon: UserCheck, label: 'Employee' },
-    { icon: Activity, label: 'Activity' }
+    { icon: LayoutDashboard, label: 'Dashboard', page: 'Dashboard' },
+    { icon: Users, label: 'Patients', page: 'Patients' },
+    { icon: Calendar, label: 'Appointments', page: 'Appointments' },
+    { icon: CreditCard, label: 'Payments', page: 'Payments' },
+    { icon: UserCheck, label: 'Employee', page: 'Employee' },
+    { icon: Activity, label: 'Activity', page: 'Activity' }
   ];
 
   const otherMenuItems = [
-    { icon: BarChart3, label: 'Statistic' },
-    { icon: HelpCircle, label: 'Help & Center' },
-    { icon: Settings, label: 'Setting' },
-    { icon: FileText, label: 'Report' }
+    { icon: BarChart3, label: 'Statistics', page: 'Statistics' },
+    { icon: HelpCircle, label: 'Help & Center', page: 'Help' },
+    { icon: Settings, label: 'Settings', page: 'Settings' },
+    { icon: FileText, label: 'Report', page: 'Report' }
   ];
+
+  const handleItemClick = (page) => {
+    if (onPageChange) {
+      onPageChange(page);
+    }
+  };
 
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <div className="logo">
-          <CheckCircle className="logo-icon" />
-          <span className="logo-text">Medcare</span>
+          <div className="logo-icon">
+            <Activity />
+          </div>
+          <span className="logo-text">Prime Clinic</span>
         </div>
       </div>
 
@@ -45,7 +53,12 @@ const Sidebar = () => {
           <span className="nav-label">MENU</span>
           <ul className="nav-list">
             {menuItems.map((item, index) => (
-              <li key={index} className={`nav-item ${item.active ? 'active' : ''}`}>
+              <li 
+                key={index} 
+                className={`nav-item ${currentPage === item.page ? 'active' : ''}`}
+                onClick={() => handleItemClick(item.page)}
+                style={{ cursor: 'pointer' }}
+              >
                 <item.icon className="nav-icon" />
                 <span className="nav-text">{item.label}</span>
               </li>
@@ -57,7 +70,12 @@ const Sidebar = () => {
           <span className="nav-label">OTHER MENU</span>
           <ul className="nav-list">
             {otherMenuItems.map((item, index) => (
-              <li key={index} className="nav-item">
+              <li 
+                key={index} 
+                className={`nav-item ${currentPage === item.page ? 'active' : ''}`}
+                onClick={() => handleItemClick(item.page)}
+                style={{ cursor: 'pointer' }}
+              >
                 <item.icon className="nav-icon" />
                 <span className="nav-text">{item.label}</span>
               </li>

@@ -102,8 +102,8 @@ app.get('/api/reports', (req, res) => {
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'MedCare server is running' });
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Prime Clinic server is running' });
 });
 
 app.listen(PORT, () => {
