@@ -1,0 +1,329 @@
+.schedule-appointment-modal {
+  width: 95%;
+  max-width: 700px;
+  max-height: 95vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.patient-info-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 16px 16px 0 0;
+  margin-bottom: 0;
+  border: none;
+  color: white;
+}
+
+.patient-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.patient-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.patient-details h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.patient-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.contact-item svg {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.appointment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px;
+  background: #ffffff;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.form-group label svg {
+  color: #3b82f6;
+  width: 18px;
+  height: 18px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 14px 18px;
+  border: 2px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background-color: #f9fafb;
+  font-weight: 500;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+  background-color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 32px;
+  padding: 24px 32px;
+  border-top: 2px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 0 0 16px 16px;
+}
+
+.btn {
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 140px;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+  border: 2px solid transparent;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: #6b7280;
+  border: 2px solid #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Priority indicators */
+.form-group select[name="priority"] option[value="urgent"] {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.form-group select[name="priority"] option[value="high"] {
+  color: #ea580c;
+  font-weight: 500;
+}
+
+.form-group select[name="priority"] option[value="normal"] {
+  color: #059669;
+}
+
+.form-group select[name="priority"] option[value="low"] {
+  color: #64748b;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .schedule-appointment-modal {
+    width: 95%;
+    margin: 20px auto;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .patient-info-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .patient-contact {
+    align-items: center;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .schedule-appointment-modal {
+    width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  .patient-info-section {
+    margin: 16px;
+    padding: 16px;
+  }
+
+  .appointment-form {
+    padding: 0 16px;
+  }
+
+  .modal-actions {
+    padding: 16px;
+    margin-top: 16px;
+  }
+}
+
+/* Loading state */
+.btn:disabled {
+  position: relative;
+}
+
+.btn:disabled::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Success state */
+.form-success {
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Time slot styling */
+.form-group select[name="appointmentTime"] option {
+  padding: 8px;
+}
+
+/* Appointment type styling */
+.form-group select[name="appointmentType"] option[value="emergency"] {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.form-group select[name="appointmentType"] option[value="procedure"] {
+  color: #7c3aed;
+  font-weight: 500;
+}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Bell, Plus, Calendar, Clock, LogOut, User } from 'lucide-react';
 import './Header.css';
 
-const Header = ({ user, onLogout }) => {
+const Header = ({ user, onLogout, onAddPatient }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
@@ -36,6 +36,12 @@ const Header = ({ user, onLogout }) => {
     return date.toLocaleTimeString('en-US', options);
   };
 
+  const handleAddPatient = () => {
+    if (onAddPatient) {
+      onAddPatient();
+    }
+  };
+
   const handleLogout = () => {
     if (onLogout) {
       onLogout();
@@ -61,7 +67,7 @@ const Header = ({ user, onLogout }) => {
       </div>
 
       <div className="header-right">
-        <button className="btn btn-primary add-patient-btn">
+        <button className="btn btn-primary add-patient-btn" onClick={handleAddPatient}>
           <Plus className="btn-icon" />
           Add patient
         </button>

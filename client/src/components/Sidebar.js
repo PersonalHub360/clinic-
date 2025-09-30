@@ -10,7 +10,8 @@ import {
   HelpCircle, 
   Settings, 
   FileText,
-  CheckCircle
+  CheckCircle,
+  Receipt
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -20,6 +21,7 @@ const Sidebar = ({ currentPage, onPageChange }) => {
     { icon: Users, label: 'Patients', page: 'Patients' },
     { icon: Calendar, label: 'Appointments', page: 'Appointments' },
     { icon: CreditCard, label: 'Payments', page: 'Payments' },
+    { icon: Receipt, label: 'Bill Management', page: 'BillManagement' },
     { icon: UserCheck, label: 'Employee', page: 'Employee' },
     { icon: Activity, label: 'Activity', page: 'Activity' }
   ];

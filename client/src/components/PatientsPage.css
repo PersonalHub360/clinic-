@@ -471,3 +471,126 @@
     right: -50px;
   }
 }
+
+/* Pagination Styles */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.results-info {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-btn {
+  padding: 8px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f8fafc;
+  color: #94a3b8;
+}
+
+.page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 12px;
+}
+
+.page-number {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-number:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-1px);
+}
+
+.page-number.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.page-ellipsis {
+  padding: 0 8px;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Responsive Pagination */
+@media (max-width: 768px) {
+  .pagination-container {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .page-numbers {
+    margin: 0 8px;
+  }
+  
+  .page-number {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+}

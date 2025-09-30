@@ -30,6 +30,14 @@ const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('general');
   const [showPassword, setShowPassword] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  
+  // Modal states for user management
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [showEditRoleModal, setShowEditRoleModal] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [showCreateRoleModal, setShowCreateRoleModal] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(null);
+  
   const [notifications, setNotifications] = useState({
     email: true,
     push: true,
@@ -217,6 +225,60 @@ const SettingsPage = () => {
     }));
   };
 
+  // User management handlers
+  const handleAddUser = () => {
+    setShowAddUserModal(true);
+  };
+
+  const handleEditRole = (role) => {
+    setSelectedRole(role);
+    setShowEditRoleModal(true);
+  };
+
+  const handleDeleteRole = (role) => {
+    setSelectedRole(role);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleCreateNewRole = () => {
+    setShowCreateRoleModal(true);
+  };
+
+  const closeAllModals = () => {
+    setShowAddUserModal(false);
+    setShowEditRoleModal(false);
+    setShowDeleteConfirmModal(false);
+    setShowCreateRoleModal(false);
+    setSelectedRole(null);
+  };
+
+  const handleAddUserSubmit = (e) => {
+    e.preventDefault();
+    // Handle add user logic here
+    alert('User added successfully!');
+    closeAllModals();
+  };
+
+  const handleEditRoleSubmit = (e) => {
+    e.preventDefault();
+    // Handle edit role logic here
+    alert('Role updated successfully!');
+    closeAllModals();
+  };
+
+  const handleDeleteConfirm = () => {
+    // Handle delete role logic here
+    alert(`Role "${selectedRole.name}" deleted successfully!`);
+    closeAllModals();
+  };
+
+  const handleCreateRoleSubmit = (e) => {
+    e.preventDefault();
+    // Handle create role logic here
+    alert('New role created successfully!');
+    closeAllModals();
+  };
+
   const renderGeneralSettings = () => (
     <div className="settings-section">
       <div className="section-header">
@@ -325,7 +387,7 @@ const SettingsPage = () => {
       <div className="section-header">
         <h3>Users & Roles</h3>
         <p>Manage user accounts and role permissions</p>
-        <button className="btn btn-primary">
+        <button className="btn btn-primary" onClick={handleAddUser}>
           <Plus size={16} />
           Add User
         </button>
@@ -337,10 +399,10 @@ const SettingsPage = () => {
             <div className="role-header">
               <h4 className="role-name">{role.name}</h4>
               <div className="role-actions">
-                <button className="btn-icon">
+                <button className="btn-icon" onClick={() => handleEditRole(role)}>
                   <Edit size={16} />
                 </button>
-                <button className="btn-icon">
+                <button className="btn-icon" onClick={() => handleDeleteRole(role)}>
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -354,13 +416,233 @@ const SettingsPage = () => {
         ))}
       </div>
       
-      <div className="add-role-card">
+      <div className="add-role-card" onClick={handleCreateNewRole}>
         <div className="add-role-content">
           <Plus size={24} className="add-icon" />
           <h4>Create New Role</h4>
           <p>Define custom permissions for specific user groups</p>
         </div>
       </div>
+
+      {/* Add User Modal */}
+      {showAddUserModal && (
+        <div className="modal-overlay" onClick={closeAllModals}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Add New User</h3>
+              <button className="modal-close" onClick={closeAllModals}>
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleAddUserSubmit}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>Full Name</label>
+                  <input type="text" required className="form-input" placeholder="Enter full name" />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input type="email" required className="form-input" placeholder="Enter email address" />
+                </div>
+                <div className="form-group">
+                  <label>Phone</label>
+                  <input type="tel" className="form-input" placeholder="Enter phone number" />
+                </div>
+                <div className="form-group">
+                  <label>Role</label>
+                  <select required className="form-select">
+                    <option value="">Select a role</option>
+                    {userRoles.map(role => (
+                      <option key={role.id} value={role.id}>{role.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Department</label>
+                  <input type="text" className="form-input" placeholder="Enter department" />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-outline" onClick={closeAllModals}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Add User
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Role Modal */}
+      {showEditRoleModal && selectedRole && (
+        <div className="modal-overlay" onClick={closeAllModals}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Edit Role: {selectedRole.name}</h3>
+              <button className="modal-close" onClick={closeAllModals}>
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleEditRoleSubmit}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>Role Name</label>
+                  <input type="text" required className="form-input" defaultValue={selectedRole.name} />
+                </div>
+                <div className="form-group">
+                  <label>Description</label>
+                  <textarea className="form-textarea" rows="3" defaultValue={selectedRole.description}></textarea>
+                </div>
+                <div className="form-group">
+                  <label>Permissions</label>
+                  <div className="permissions-grid">
+                    <label className="permission-item">
+                      <input type="checkbox" defaultChecked />
+                      <span>View Patients</span>
+                    </label>
+                    <label className="permission-item">
+                      <input type="checkbox" defaultChecked />
+                      <span>Manage Appointments</span>
+                    </label>
+                    <label className="permission-item">
+                      <input type="checkbox" />
+                      <span>Access Medical Records</span>
+                    </label>
+                    <label className="permission-item">
+                      <input type="checkbox" />
+                      <span>Generate Reports</span>
+                    </label>
+                    <label className="permission-item">
+                      <input type="checkbox" />
+                      <span>Manage Billing</span>
+                    </label>
+                    <label className="permission-item">
+                      <input type="checkbox" />
+                      <span>System Administration</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-outline" onClick={closeAllModals}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Update Role
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirmModal && selectedRole && (
+        <div className="modal-overlay" onClick={closeAllModals}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Delete Role</h3>
+              <button className="modal-close" onClick={closeAllModals}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="delete-confirmation">
+                <AlertTriangle size={48} className="warning-icon" />
+                <h4>Are you sure you want to delete this role?</h4>
+                <p>Role: <strong>{selectedRole.name}</strong></p>
+                <p>This action cannot be undone. All users with this role will need to be reassigned.</p>
+                <p className="warning-text">
+                  <strong>{selectedRole.users} users</strong> are currently assigned to this role.
+                </p>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-outline" onClick={closeAllModals}>
+                Cancel
+              </button>
+              <button type="button" className="btn btn-danger" onClick={handleDeleteConfirm}>
+                Delete Role
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create New Role Modal */}
+      {showCreateRoleModal && (
+        <div className="modal-overlay" onClick={closeAllModals}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Create New Role</h3>
+              <button className="modal-close" onClick={closeAllModals}>
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleCreateRoleSubmit}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>Role Name</label>
+                  <input type="text" required className="form-input" placeholder="Enter role name" />
+                </div>
+                <div className="form-group">
+                  <label>Description</label>
+                  <textarea className="form-textarea" rows="3" placeholder="Describe the role responsibilities"></textarea>
+                </div>
+                <div className="form-group">
+                  <label>Base Role Template (Optional)</label>
+                  <select className="form-select">
+                    <option value="">Start from scratch</option>
+                    <option value="administrator">Copy from Administrator</option>
+                    <option value="doctor">Copy from Doctor</option>
+                    <option value="nurse">Copy from Nurse</option>
+                    <option value="receptionist">Copy from Receptionist</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Custom Permissions</label>
+                  <div className="permissions-grid">
+                    <label className="permission-item">
+                      <input type="checkbox" />
+                      <span>View Patients</span>
+                    </label>
+                    <label className="permission-item">
+                      <input type="checkbox" />
+                      <span>Manage Appointments</span>
+                    </label>
+                    <label className="permission-item">
+                      <input type="checkbox" />
+                      <span>Access Medical Records</span>
+                    </label>
+                    <label className="permission-item">
+                      <input type="checkbox" />
+                      <span>Generate Reports</span>
+                    </label>
+                    <label className="permission-item">
+                      <input type="checkbox" />
+                      <span>Manage Billing</span>
+                    </label>
+                    <label className="permission-item">
+                      <input type="checkbox" />
+                      <span>System Administration</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-outline" onClick={closeAllModals}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Create Role
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 

@@ -10,7 +10,9 @@ import EmployeePage from './components/EmployeePage';
 import ActivityPage from './components/ActivityPage';
 import StatisticsPage from './components/StatisticsPage';
 import SettingsPage from './components/SettingsPage';
+import BillManagement from './components/BillManagement';
 import Auth from './components/Auth';
+import AddPatientModal from './components/AddPatientModal';
 import axios from 'axios';
 
 function App() {
@@ -18,6 +20,9 @@ function App() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState('Dashboard');
+  const [showAddPatientModal, setShowAddPatientModal] = useState(false);
+  const [patients, setPatients] = useState([]);
+  const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -65,12 +70,47 @@ function App() {
     setCurrentPage(pageName);
   };
 
+  const handleAddPatient = () => {
+    setShowAddPatientModal(true);
+  };
+
+  const handleCloseAddPatientModal = () => {
+    setShowAddPatientModal(false);
+  };
+
+  const handleSavePatient = (newPatient) => {
+    const patientWithId = {
+      ...newPatient,
+      id: patients.length + 1,
+      name: newPatient.name, // Use the name field directly from AddPatientModal
+      age: newPatient.age,
+      gender: newPatient.gender,
+      phone: newPatient.phone,
+      email: newPatient.email,
+      lastVisit: new Date().toISOString().split('T')[0],
+      status: 'Active',
+      condition: newPatient.condition || 'General',
+      avatar: `https://images.unsplash.com/photo-${newPatient.gender === 'Male' ? '1507003211169-0a1dd7228f2d' : '1494790108755-2616b612b786'}?w=40&h=40&fit=crop&crop=face`
+    };
+    setPatients(prev => [...prev, patientWithId]);
+    setShowAddPatientModal(false);
+  };
+
+  const handleSaveAppointment = (appointmentData) => {
+    setAppointments(prev => [...prev, appointmentData]);
+  };
+
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'Dashboard':
         return <Dashboard data={dashboardData} />;
       case 'Patients':
-        return <PatientsPage />;
+        return <PatientsPage 
+          patients={patients} 
+          onSavePatient={handleSavePatient}
+          appointments={appointments}
+          onSaveAppointment={handleSaveAppointment}
+        />;
       case 'Appointments':
         return <AppointmentsPage />;
       case 'Payments':
@@ -81,6 +121,8 @@ function App() {
         return <ActivityPage />;
       case 'Statistics':
         return <StatisticsPage />;
+      case 'BillManagement':
+        return <BillManagement />;
       case 'Settings':
         return <SettingsPage />;
       default:
@@ -107,9 +149,16 @@ function App() {
     <div className="app">
       <Sidebar currentPage={currentPage} onPageChange={handlePageChange} />
       <div className="main-content">
-        <Header user={user} onLogout={handleLogout} />
+        <Header user={user} onLogout={handleLogout} onAddPatient={handleAddPatient} />
         {renderCurrentPage()}
       </div>
+      
+      {/* Add Patient Modal */}
+      <AddPatientModal 
+        isOpen={showAddPatientModal}
+        onClose={handleCloseAddPatientModal}
+        onSave={handleSavePatient}
+      />
     </div>
   );
 }

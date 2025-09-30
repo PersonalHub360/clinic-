@@ -1,0 +1,298 @@
+/* Edit Patient Modal Styles */
+.edit-patient-modal {
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.edit-patient-modal .modal-header {
+  padding: 24px 32px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.edit-patient-modal .modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+}
+
+.edit-patient-modal .close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.edit-patient-modal .close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Photo Upload Section */
+.photo-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 2px dashed #cbd5e1;
+}
+
+.photo-preview {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.photo-upload-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upload-note {
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* Form Sections */
+.form-section {
+  margin-bottom: 24px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.form-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #10b981;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* Required field indicator */
+.form-group label:has(+ input[required])::after,
+.form-group label:has(+ select[required])::after {
+  content: ' *';
+  color: #ef4444;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 24px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+}
+
+.btn-outline {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-outline:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-primary {
+  background: #10b981;
+  color: white;
+  border: 1px solid #10b981;
+}
+
+.btn-primary:hover {
+  background: #059669;
+  border-color: #059669;
+}
+
+.btn-primary:active {
+  background: #047857;
+  border-color: #047857;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+  border: 1px solid #6b7280;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+  border-color: #4b5563;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .edit-patient-modal {
+    max-width: 100%;
+    margin: 10px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    justify-content: center;
+  }
+  
+  .photo-upload-section {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-section {
+    padding: 16px;
+  }
+  
+  .patient-form {
+    gap: 16px;
+  }
+  
+  .modal-body {
+    padding: 16px;
+  }
+  
+  .edit-patient-modal .modal-header {
+    padding: 16px 20px 12px;
+  }
+}
+
+/* Form validation styles */
+.form-group input:invalid:not(:placeholder-shown),
+.form-group select:invalid:not(:placeholder-shown) {
+  border-color: #ef4444;
+}
+
+.form-group input:valid:not(:placeholder-shown),
+.form-group select:valid:not(:placeholder-shown) {
+  border-color: #10b981;
+}
+
+/* Animation for modal appearance */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.edit-patient-modal {
+  animation: modalSlideIn 0.3s ease-out;
+}

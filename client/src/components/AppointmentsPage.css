@@ -667,6 +667,72 @@
   transform: none;
 }
 
+/* Checkbox Styles */
+.select-all-checkbox,
+.appointment-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #10b981;
+}
+
+/* Bulk Actions */
+.bulk-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+  padding-left: 16px;
+  border-left: 1px solid #e2e8f0;
+}
+
+.bulk-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirm-bulk {
+  background: #10b981;
+  color: white;
+}
+
+.confirm-bulk:hover {
+  background: #059669;
+}
+
+.cancel-bulk {
+  background: #f59e0b;
+  color: white;
+}
+
+.cancel-bulk:hover {
+  background: #d97706;
+}
+
+.delete-bulk {
+  background: #ef4444;
+  color: white;
+}
+
+.delete-bulk:hover {
+  background: #dc2626;
+}
+
+/* Table adjustments for checkboxes */
+.appointments-table th:first-child,
+.appointments-table td:first-child {
+  width: 40px;
+  text-align: center;
+  padding: 12px 8px;
+}
+
 /* Responsive Modal */
 @media (max-width: 576px) {
   .modal-overlay {

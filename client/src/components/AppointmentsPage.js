@@ -6,6 +6,8 @@ const AppointmentsPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [viewMode, setViewMode] = useState('day');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedAppointments, setSelectedAppointments] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
   
   // Modal states
   const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
@@ -17,60 +19,84 @@ const AppointmentsPage = () => {
   // Sample appointments data
   const [appointments, setAppointments] = useState([
     {
-      id: 1,
-      time: '09:00',
-      duration: '30 min',
-      patient: {
-        name: 'Sarah Johnson',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
-        phone: '+1 (555) 123-4567',
-        email: 'sarah.j@email.com'
-      },
-      type: 'General Checkup',
-      status: 'confirmed',
-      notes: 'Regular health checkup and blood pressure monitoring'
+      id: '00863',
+      doctorName: 'Floyd Miles',
+      visitType: 'New symptom visit',
+      dateTime: '2021-05-26 7:1:00 pm',
+      status: 'Not Confirmed',
+      statusType: 'not-confirmed'
     },
     {
-      id: 2,
-      time: '10:30',
-      duration: '45 min',
-      patient: {
-        name: 'Michael Chen',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
-        phone: '+1 (555) 987-6543',
-        email: 'michael.chen@email.com'
-      },
-      type: 'Dental Cleaning',
-      status: 'pending',
-      notes: 'Routine dental cleaning and examination'
+      id: '00845',
+      doctorName: 'Devon Lane',
+      visitType: 'Follow up visit',
+      dateTime: '2021-05-17 10:45 am',
+      status: 'Not Confirmed',
+      statusType: 'not-confirmed'
     },
     {
-      id: 3,
-      time: '14:00',
-      duration: '60 min',
-      patient: {
-        name: 'Emily Davis',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face',
-        phone: '+1 (555) 456-7890',
-        email: 'emily.davis@email.com'
-      },
-      type: 'Consultation',
-      status: 'confirmed',
-      notes: 'Follow-up consultation for treatment plan'
+      id: '00842',
+      doctorName: 'Marvin McKinney',
+      visitType: 'Follow up visit',
+      dateTime: '2021-05-10 09:00 am',
+      status: 'Request Cancellation',
+      statusType: 'request-cancellation'
     },
     {
-      id: 4,
-      time: '15:30',
-      duration: '30 min',
-      patient: {
-        name: 'Robert Wilson',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
-        phone: '+1 (555) 321-0987',
-        email: 'robert.w@email.com'
-      },
-      type: 'Physical Therapy',
-      status: 'cancelled',
-      notes: 'Cancelled due to patient illness'
+      id: '00774',
+      doctorName: 'Guy Hawkins',
+      visitType: 'New symptom visit',
+      dateTime: '2021-05-05 05:00 pm',
+      status: 'Confirmed on 2021-05-05',
+      statusType: 'confirmed'
+    },
+    {
+      id: '00865',
+      doctorName: 'Cameron Williamson',
+      visitType: 'Chronic care visit',
+      dateTime: '2021-04-28 11:10 am',
+      status: 'Confirmed on 2021-04-27',
+      statusType: 'confirmed'
+    },
+    {
+      id: '00834',
+      doctorName: 'Albert Flores',
+      visitType: 'New symptom visit',
+      dateTime: '2021-04-22 14:20 pm',
+      status: 'Confirmed on 2021-04-21',
+      statusType: 'confirmed'
+    },
+    {
+      id: '00843',
+      doctorName: 'Jerome Bell',
+      visitType: 'Follow up visit',
+      dateTime: '2021-04-17 06:20 am',
+      status: 'Confirmed on 2021-04-17',
+      statusType: 'confirmed'
+    },
+    {
+      id: '00845',
+      doctorName: 'Dianne Russell',
+      visitType: 'New symptom visit',
+      dateTime: '2021-04-15 11:40 am',
+      status: 'Confirmed on 2021-04-15',
+      statusType: 'confirmed'
+    },
+    {
+      id: '00856',
+      doctorName: 'Ronald Richards',
+      visitType: 'Follow up visit',
+      dateTime: '2021-04-11 11:15 am',
+      status: 'Request Cancellation',
+      statusType: 'request-cancellation'
+    },
+    {
+      id: '00143',
+      doctorName: 'Darlene Robertson',
+      visitType: 'New symptom visit',
+      dateTime: '2021-04-10 09:20 am',
+      status: 'Confirmed on 2021-04-10',
+      statusType: 'confirmed'
     }
   ]);
 
@@ -82,6 +108,12 @@ const AppointmentsPage = () => {
   const handleEditAppointment = (appointment) => {
     setSelectedAppointment(appointment);
     setShowEditModal(true);
+  };
+
+  const handleViewAppointment = (appointment) => {
+    setSelectedAppointment(appointment);
+    // Could open a view modal or navigate to appointment details
+    alert(`Viewing appointment ${appointment.id} for ${appointment.doctorName}`);
   };
 
   const handleConfirmAppointment = (appointmentId) => {
@@ -113,6 +145,62 @@ const AppointmentsPage = () => {
     alert('View Calendar functionality - would open full calendar view');
   };
 
+  // Checkbox functionality
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedAppointments([]);
+      setSelectAll(false);
+    } else {
+      setSelectedAppointments(filteredAppointments.map(apt => apt.id));
+      setSelectAll(true);
+    }
+  };
+
+  const handleSelectAppointment = (appointmentId) => {
+    setSelectedAppointments(prev => {
+      const newSelected = prev.includes(appointmentId)
+        ? prev.filter(id => id !== appointmentId)
+        : [...prev, appointmentId];
+      
+      // Update selectAll state based on selection
+      setSelectAll(newSelected.length === filteredAppointments.length);
+      return newSelected;
+    });
+  };
+
+  const handleBulkAction = (action) => {
+    if (selectedAppointments.length === 0) {
+      alert('Please select appointments first');
+      return;
+    }
+
+    switch (action) {
+      case 'confirm':
+        setAppointments(prev => prev.map(apt => 
+          selectedAppointments.includes(apt.id) 
+            ? { ...apt, status: 'Confirmed', statusType: 'confirmed' } 
+            : apt
+        ));
+        break;
+      case 'cancel':
+        setAppointments(prev => prev.map(apt => 
+          selectedAppointments.includes(apt.id) 
+            ? { ...apt, status: 'Cancelled', statusType: 'cancelled' } 
+            : apt
+        ));
+        break;
+      case 'delete':
+        setAppointments(prev => prev.filter(apt => !selectedAppointments.includes(apt.id)));
+        break;
+      default:
+        break;
+    }
+    
+    // Clear selections after action
+    setSelectedAppointments([]);
+    setSelectAll(false);
+  };
+
   const closeModals = () => {
     setShowNewAppointmentModal(false);
     setShowEditModal(false);
@@ -129,8 +217,9 @@ const AppointmentsPage = () => {
   ];
 
   const filteredAppointments = appointments.filter(appointment =>
-    appointment.patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    appointment.type.toLowerCase().includes(searchTerm.toLowerCase())
+    appointment.doctorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    appointment.visitType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    appointment.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const generateCalendarDays = () => {
@@ -212,129 +301,126 @@ const AppointmentsPage = () => {
       </div>
 
       <div className="appointments-content">
-        <div className="appointments-list">
-          <h3 className="list-title">Today's Schedule</h3>
-          <div className="appointments-timeline">
-            {filteredAppointments.map((appointment) => (
-              <div key={appointment.id} className={`appointment-card ${appointment.status}`}>
-                <div className="appointment-time">
-                  <Clock size={16} />
-                  <span>{appointment.time}</span>
-                  <span className="duration">{appointment.duration}</span>
-                </div>
-                
-                <div className="appointment-content">
-                  <div className="appointment-header">
-                    <div className="patient-info">
-                      <img
-                        src={appointment.patient.avatar}
-                        alt={appointment.patient.name}
-                        className="patient-avatar"
+        <div className="appointments-table-container">
+          <div className="table-header">
+            <div className="table-controls">
+              <div className="show-entries">
+                <span>Show:</span>
+                <select className="entries-select">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+              <div className="table-actions">
+                <button className="refresh-btn">
+                  <Calendar size={16} />
+                  Refresh data
+                </button>
+                <button className="filter-btn">Show Filters</button>
+                <button className="download-btn">Download PDF</button>
+                {selectedAppointments.length > 0 && (
+                  <div className="bulk-actions">
+                    <button 
+                      className="bulk-btn confirm-bulk"
+                      onClick={() => handleBulkAction('confirm')}
+                    >
+                      <CheckCircle size={16} />
+                      Confirm Selected ({selectedAppointments.length})
+                    </button>
+                    <button 
+                      className="bulk-btn cancel-bulk"
+                      onClick={() => handleBulkAction('cancel')}
+                    >
+                      <XCircle size={16} />
+                      Cancel Selected
+                    </button>
+                    <button 
+                      className="bulk-btn delete-bulk"
+                      onClick={() => handleBulkAction('delete')}
+                    >
+                      <Trash2 size={16} />
+                      Delete Selected
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="appointments-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    <input
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={handleSelectAll}
+                      className="select-all-checkbox"
+                    />
+                  </th>
+                  <th>ID#</th>
+                  <th>Doctor's Name</th>
+                  <th>Visit type</th>
+                  <th>Date/Time</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAppointments.map((appointment) => (
+                  <tr key={appointment.id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedAppointments.includes(appointment.id)}
+                        onChange={() => handleSelectAppointment(appointment.id)}
+                        className="appointment-checkbox"
                       />
-                      <div>
-                        <h4 className="patient-name">{appointment.patient.name}</h4>
-                        <p className="appointment-type">{appointment.type}</p>
+                    </td>
+                    <td className="appointment-id">{appointment.id}</td>
+                    <td className="doctor-name">{appointment.doctorName}</td>
+                    <td className="visit-type">{appointment.visitType}</td>
+                    <td className="date-time">{appointment.dateTime}</td>
+                    <td className="status">
+                      <span className={`status-badge ${appointment.statusType}`}>
+                        {appointment.status}
+                      </span>
+                    </td>
+                    <td className="actions">
+                      <div className="action-buttons">
+                        <button 
+                          className="action-btn view-btn"
+                          onClick={() => handleViewAppointment(appointment)}
+                          title="View"
+                        >
+                          <User size={16} />
+                        </button>
+                        <button 
+                          className="action-btn edit-btn"
+                          onClick={() => handleEditAppointment(appointment)}
+                          title="Edit"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button 
+                          className="action-btn cancel-btn"
+                          onClick={() => handleCancelAppointment(appointment.id)}
+                          title="Cancel"
+                        >
+                          <XCircle size={16} />
+                        </button>
                       </div>
-                    </div>
-                    <span className={`status-badge ${appointment.status}`}>
-                      {appointment.status}
-                    </span>
-                  </div>
-
-                  <div className="appointment-details">
-                    <div className="contact-info">
-                      <Phone size={14} />
-                      <span>{appointment.patient.phone}</span>
-                    </div>
-                    <div className="contact-info">
-                      <Mail size={14} />
-                      <span>{appointment.patient.email}</span>
-                    </div>
-                    {appointment.notes && (
-                      <p className="appointment-notes">{appointment.notes}</p>
-                    )}
-                  </div>
-
-                  <div className="appointment-actions">
-                    <button 
-                      className="btn btn-sm btn-primary"
-                      onClick={() => handleEditAppointment(appointment)}
-                    >
-                      <Edit className="btn-icon" />
-                      Edit
-                    </button>
-                    <button 
-                      className="btn btn-sm btn-outline"
-                      onClick={() => handleConfirmAppointment(appointment.id)}
-                      disabled={appointment.status === 'confirmed'}
-                    >
-                      <CheckCircle className="btn-icon" />
-                      Confirm
-                    </button>
-                    <button 
-                      className="btn btn-sm btn-outline"
-                      onClick={() => handleCancelAppointment(appointment.id)}
-                      disabled={appointment.status === 'cancelled'}
-                    >
-                      <XCircle className="btn-icon" />
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div className="calendar-widget">
-          <div className="mini-calendar">
-            <div className="widget-header">
-              <h3>Calendar</h3>
-            </div>
-            <div className="calendar-grid">
-              <div className="calendar-header">
-                <span>Sun</span>
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
-                <span>Sat</span>
-              </div>
-              <div className="calendar-body">
-                {calendarDays.map((day, index) => {
-                  const isToday = day.toDateString() === today.toDateString();
-                  const hasAppointments = Math.random() > 0.7; // Random for demo
-                  return (
-                    <div
-                      key={index}
-                      className={`calendar-day ${isToday ? 'today' : ''} ${hasAppointments ? 'has-appointments' : ''}`}
-                      onClick={() => handleCalendarDayClick(day)}
-                    >
-                      {day.getDate()}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
 
-          <div className="quick-actions">
-            <h4>Quick Actions</h4>
-            <button className="quick-btn" onClick={handleNewAppointment}>
-              <Plus size={16} />
-              New Appointment
-            </button>
-            <button className="quick-btn" onClick={handleAddPatient}>
-              <User size={16} />
-              Add Patient
-            </button>
-            <button className="quick-btn" onClick={handleViewCalendar}>
-              <Calendar size={16} />
-              View Calendar
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* New Appointment Modal */}
@@ -397,29 +483,29 @@ const AppointmentsPage = () => {
             <div className="modal-body">
               <div className="appointment-form">
                 <div className="form-group">
-                  <label>Patient Name</label>
-                  <input type="text" defaultValue={selectedAppointment.patient.name} />
+                  <label>Doctor Name</label>
+                  <input type="text" defaultValue={selectedAppointment.doctorName} />
                 </div>
                 <div className="form-group">
-                  <label>Date</label>
-                  <input type="date" defaultValue={selectedDate} />
+                  <label>Date/Time</label>
+                  <input type="text" defaultValue={selectedAppointment.dateTime} />
                 </div>
                 <div className="form-group">
-                  <label>Time</label>
-                  <input type="time" defaultValue={selectedAppointment.time} />
-                </div>
-                <div className="form-group">
-                  <label>Appointment Type</label>
-                  <select defaultValue={selectedAppointment.type}>
+                  <label>Visit Type</label>
+                  <select defaultValue={selectedAppointment.visitType}>
+                    <option>New symptom visit</option>
+                    <option>Follow up visit</option>
+                    <option>Chronic care visit</option>
                     <option>General Checkup</option>
-                    <option>Consultation</option>
-                    <option>Dental Cleaning</option>
-                    <option>Physical Therapy</option>
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Notes</label>
-                  <textarea defaultValue={selectedAppointment.notes}></textarea>
+                  <label>Status</label>
+                  <select defaultValue={selectedAppointment.statusType}>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="not-confirmed">Not Confirmed</option>
+                    <option value="request-cancellation">Request Cancellation</option>
+                  </select>
                 </div>
               </div>
               <div className="modal-actions">
