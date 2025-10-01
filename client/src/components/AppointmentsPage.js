@@ -1,13 +1,51 @@
-import React, { useState } from 'react';
-import { Calendar, Clock, Search, Phone, Mail, User, Plus, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { 
+  Calendar, 
+  Clock, 
+  Search, 
+  Phone, 
+  Mail, 
+  User, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  CheckCircle, 
+  XCircle,
+  Filter,
+  Download,
+  Printer,
+  RefreshCw,
+  Eye,
+  Users,
+  CalendarDays,
+  MapPin,
+  Stethoscope,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Grid,
+  List,
+  SortAsc,
+  SortDesc,
+  Bell,
+  Settings,
+  FileText,
+  Activity
+} from 'lucide-react';
 import './AppointmentsPage.css';
 
 const AppointmentsPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [viewMode, setViewMode] = useState('day');
+  const [viewMode, setViewMode] = useState('list');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAppointments, setSelectedAppointments] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [doctorFilter, setDoctorFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('dateTime');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [showFilters, setShowFilters] = useState(false);
+  const [currentWeek, setCurrentWeek] = useState(new Date());
   
   // Modal states
   const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
@@ -15,90 +53,190 @@ const AppointmentsPage = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [showAppointmentDetails, setShowAppointmentDetails] = useState(false);
 
-  // Sample appointments data
+  // Enhanced appointments data with more comprehensive information
   const [appointments, setAppointments] = useState([
     {
       id: '00863',
-      doctorName: 'Floyd Miles',
+      patientName: 'Sarah Johnson',
+      patientId: 'PAT-001',
+      doctorName: 'Dr. Floyd Miles',
+      doctorId: 'DOC-001',
+      department: 'Cardiology',
       visitType: 'New symptom visit',
-      dateTime: '2021-05-26 7:1:00 pm',
+      dateTime: '2024-01-26T19:01:00',
+      duration: 30,
       status: 'Not Confirmed',
-      statusType: 'not-confirmed'
+      statusType: 'not-confirmed',
+      priority: 'high',
+      symptoms: 'Chest pain, shortness of breath',
+      notes: 'Patient reports chest discomfort for 3 days',
+      contactNumber: '+1 (555) 123-4567',
+      email: 'sarah.johnson@email.com',
+      insurance: 'Blue Cross Blue Shield',
+      roomNumber: 'Room 201',
+      appointmentType: 'In-person'
     },
     {
       id: '00845',
-      doctorName: 'Devon Lane',
+      patientName: 'Michael Chen',
+      patientId: 'PAT-002',
+      doctorName: 'Dr. Devon Lane',
+      doctorId: 'DOC-002',
+      department: 'General Medicine',
       visitType: 'Follow up visit',
-      dateTime: '2021-05-17 10:45 am',
-      status: 'Not Confirmed',
-      statusType: 'not-confirmed'
+      dateTime: '2024-01-17T10:45:00',
+      duration: 20,
+      status: 'Confirmed',
+      statusType: 'confirmed',
+      priority: 'medium',
+      symptoms: 'Follow-up for hypertension',
+      notes: 'Blood pressure monitoring',
+      contactNumber: '+1 (555) 234-5678',
+      email: 'michael.chen@email.com',
+      insurance: 'Aetna',
+      roomNumber: 'Room 105',
+      appointmentType: 'In-person'
     },
     {
       id: '00842',
-      doctorName: 'Marvin McKinney',
-      visitType: 'Follow up visit',
-      dateTime: '2021-05-10 09:00 am',
+      patientName: 'Emily Davis',
+      patientId: 'PAT-003',
+      doctorName: 'Dr. Marvin McKinney',
+      doctorId: 'DOC-003',
+      department: 'Pediatrics',
+      visitType: 'Routine checkup',
+      dateTime: '2024-01-10T09:00:00',
+      duration: 25,
       status: 'Request Cancellation',
-      statusType: 'request-cancellation'
+      statusType: 'request-cancellation',
+      priority: 'low',
+      symptoms: 'Annual physical exam',
+      notes: 'Routine pediatric examination',
+      contactNumber: '+1 (555) 345-6789',
+      email: 'emily.davis@email.com',
+      insurance: 'United Healthcare',
+      roomNumber: 'Room 302',
+      appointmentType: 'In-person'
     },
     {
       id: '00774',
-      doctorName: 'Guy Hawkins',
+      patientName: 'Robert Wilson',
+      patientId: 'PAT-004',
+      doctorName: 'Dr. Guy Hawkins',
+      doctorId: 'DOC-004',
+      department: 'Orthopedics',
       visitType: 'New symptom visit',
-      dateTime: '2021-05-05 05:00 pm',
-      status: 'Confirmed on 2021-05-05',
-      statusType: 'confirmed'
+      dateTime: '2024-01-05T17:00:00',
+      duration: 45,
+      status: 'Confirmed',
+      statusType: 'confirmed',
+      priority: 'high',
+      symptoms: 'Knee pain and swelling',
+      notes: 'Sports injury evaluation',
+      contactNumber: '+1 (555) 456-7890',
+      email: 'robert.wilson@email.com',
+      insurance: 'Cigna',
+      roomNumber: 'Room 150',
+      appointmentType: 'In-person'
     },
     {
       id: '00865',
-      doctorName: 'Cameron Williamson',
+      patientName: 'Lisa Anderson',
+      patientId: 'PAT-005',
+      doctorName: 'Dr. Cameron Williamson',
+      doctorId: 'DOC-005',
+      department: 'Dermatology',
       visitType: 'Chronic care visit',
-      dateTime: '2021-04-28 11:10 am',
-      status: 'Confirmed on 2021-04-27',
-      statusType: 'confirmed'
-    },
-    {
-      id: '00834',
-      doctorName: 'Albert Flores',
-      visitType: 'New symptom visit',
-      dateTime: '2021-04-22 14:20 pm',
-      status: 'Confirmed on 2021-04-21',
-      statusType: 'confirmed'
-    },
-    {
-      id: '00843',
-      doctorName: 'Jerome Bell',
-      visitType: 'Follow up visit',
-      dateTime: '2021-04-17 06:20 am',
-      status: 'Confirmed on 2021-04-17',
-      statusType: 'confirmed'
-    },
-    {
-      id: '00845',
-      doctorName: 'Dianne Russell',
-      visitType: 'New symptom visit',
-      dateTime: '2021-04-15 11:40 am',
-      status: 'Confirmed on 2021-04-15',
-      statusType: 'confirmed'
-    },
-    {
-      id: '00856',
-      doctorName: 'Ronald Richards',
-      visitType: 'Follow up visit',
-      dateTime: '2021-04-11 11:15 am',
-      status: 'Request Cancellation',
-      statusType: 'request-cancellation'
-    },
-    {
-      id: '00143',
-      doctorName: 'Darlene Robertson',
-      visitType: 'New symptom visit',
-      dateTime: '2021-04-10 09:20 am',
-      status: 'Confirmed on 2021-04-10',
-      statusType: 'confirmed'
+      dateTime: '2024-01-28T11:10:00',
+      duration: 30,
+      status: 'Confirmed',
+      statusType: 'confirmed',
+      priority: 'medium',
+      symptoms: 'Skin condition monitoring',
+      notes: 'Regular dermatology follow-up',
+      contactNumber: '+1 (555) 567-8901',
+      email: 'lisa.anderson@email.com',
+      insurance: 'Kaiser Permanente',
+      roomNumber: 'Room 220',
+      appointmentType: 'Telemedicine'
     }
   ]);
+
+  // Statistics calculation
+  const appointmentStats = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const todayAppointments = appointments.filter(apt => 
+      apt.dateTime.split('T')[0] === today
+    );
+    
+    return {
+      total: appointments.length,
+      today: todayAppointments.length,
+      confirmed: appointments.filter(apt => apt.statusType === 'confirmed').length,
+      pending: appointments.filter(apt => apt.statusType === 'not-confirmed').length,
+      cancelled: appointments.filter(apt => apt.statusType === 'request-cancellation').length,
+      completed: appointments.filter(apt => apt.statusType === 'completed').length
+    };
+  }, [appointments]);
+
+  // Enhanced filtering and sorting
+  const filteredAndSortedAppointments = useMemo(() => {
+    let filtered = appointments.filter(appointment => {
+      const matchesSearch = 
+        appointment.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.doctorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.visitType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.department.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === 'all' || appointment.statusType === statusFilter;
+      const matchesDoctor = doctorFilter === 'all' || appointment.doctorId === doctorFilter;
+      
+      return matchesSearch && matchesStatus && matchesDoctor;
+    });
+
+    // Sort appointments
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case 'dateTime':
+          aValue = new Date(a.dateTime);
+          bValue = new Date(b.dateTime);
+          break;
+        case 'patientName':
+          aValue = a.patientName.toLowerCase();
+          bValue = b.patientName.toLowerCase();
+          break;
+        case 'doctorName':
+          aValue = a.doctorName.toLowerCase();
+          bValue = b.doctorName.toLowerCase();
+          break;
+        case 'status':
+          aValue = a.status.toLowerCase();
+          bValue = b.status.toLowerCase();
+          break;
+        default:
+          return 0;
+      }
+      
+      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  }, [appointments, searchTerm, statusFilter, doctorFilter, sortBy, sortOrder]);
+
+  // Get unique doctors for filter
+  const doctors = useMemo(() => {
+    const uniqueDoctors = [...new Set(appointments.map(apt => apt.doctorName))];
+    return uniqueDoctors.map((name, index) => ({
+      id: `DOC-${index + 1}`,
+      name
+    }));
+  }, [appointments]);
 
   // Appointment management functions
   const handleNewAppointment = () => {
@@ -112,37 +250,82 @@ const AppointmentsPage = () => {
 
   const handleViewAppointment = (appointment) => {
     setSelectedAppointment(appointment);
-    // Could open a view modal or navigate to appointment details
-    alert(`Viewing appointment ${appointment.id} for ${appointment.doctorName}`);
+    setShowAppointmentDetails(true);
   };
 
   const handleConfirmAppointment = (appointmentId) => {
     setAppointments(prev => prev.map(apt => 
-      apt.id === appointmentId ? { ...apt, status: 'confirmed' } : apt
+      apt.id === appointmentId ? { 
+        ...apt, 
+        status: 'Confirmed', 
+        statusType: 'confirmed' 
+      } : apt
     ));
   };
 
   const handleCancelAppointment = (appointmentId) => {
     setConfirmAction(() => () => {
       setAppointments(prev => prev.map(apt => 
-        apt.id === appointmentId ? { ...apt, status: 'cancelled' } : apt
+        apt.id === appointmentId ? { 
+          ...apt, 
+          status: 'Cancelled', 
+          statusType: 'cancelled' 
+        } : apt
       ));
       setShowConfirmDialog(false);
     });
     setShowConfirmDialog(true);
   };
 
-  const handleCalendarDayClick = (day) => {
-    const dateString = day.toISOString().split('T')[0];
-    setSelectedDate(dateString);
+  const handleDeleteAppointment = (appointmentId) => {
+    setConfirmAction(() => () => {
+      setAppointments(prev => prev.filter(apt => apt.id !== appointmentId));
+      setShowConfirmDialog(false);
+    });
+    setShowConfirmDialog(true);
   };
 
-  const handleAddPatient = () => {
-    alert('Add Patient functionality - would open patient registration form');
+  // Sorting functions
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
   };
 
-  const handleViewCalendar = () => {
-    alert('View Calendar functionality - would open full calendar view');
+  const getSortIcon = (field) => {
+    if (sortBy !== field) return null;
+    return sortOrder === 'asc' ? <SortAsc className="sort-icon" /> : <SortDesc className="sort-icon" />;
+  };
+
+  // Status styling functions
+  const getStatusClass = (statusType) => {
+    switch (statusType) {
+      case 'confirmed': return 'status-confirmed';
+      case 'not-confirmed': return 'status-pending';
+      case 'request-cancellation': return 'status-cancelled';
+      case 'completed': return 'status-completed';
+      default: return 'status-default';
+    }
+  };
+
+  const getPriorityClass = (priority) => {
+    switch (priority) {
+      case 'high': return 'priority-high';
+      case 'medium': return 'priority-medium';
+      case 'low': return 'priority-low';
+      default: return 'priority-default';
+    }
+  };
+
+  const formatDateTime = (dateTime) => {
+    const date = new Date(dateTime);
+    return {
+      date: date.toLocaleDateString(),
+      time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
   };
 
   // Checkbox functionality
@@ -151,7 +334,7 @@ const AppointmentsPage = () => {
       setSelectedAppointments([]);
       setSelectAll(false);
     } else {
-      setSelectedAppointments(filteredAppointments.map(apt => apt.id));
+      setSelectedAppointments(filteredAndSortedAppointments.map(apt => apt.id));
       setSelectAll(true);
     }
   };
@@ -162,8 +345,7 @@ const AppointmentsPage = () => {
         ? prev.filter(id => id !== appointmentId)
         : [...prev, appointmentId];
       
-      // Update selectAll state based on selection
-      setSelectAll(newSelected.length === filteredAppointments.length);
+      setSelectAll(newSelected.length === filteredAndSortedAppointments.length);
       return newSelected;
     });
   };
@@ -196,343 +378,551 @@ const AppointmentsPage = () => {
         break;
     }
     
-    // Clear selections after action
     setSelectedAppointments([]);
     setSelectAll(false);
   };
 
-  const closeModals = () => {
-    setShowNewAppointmentModal(false);
-    setShowEditModal(false);
-    setSelectedAppointment(null);
-    setShowConfirmDialog(false);
-    setConfirmAction(null);
-  };
-
-  const stats = [
-    { label: 'Today\'s Appointments', value: '12', color: '#10b981' },
-    { label: 'Confirmed', value: '8', color: '#3b82f6' },
-    { label: 'Pending', value: '3', color: '#f59e0b' },
-    { label: 'Cancelled', value: '1', color: '#ef4444' }
-  ];
-
-  const filteredAppointments = appointments.filter(appointment =>
-    appointment.doctorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    appointment.visitType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    appointment.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const generateCalendarDays = () => {
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    const firstDay = new Date(currentYear, currentMonth, 1);
-    const lastDay = new Date(currentYear, currentMonth + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-
-    const days = [];
-    for (let i = 0; i < 42; i++) {
-      const date = new Date(startDate);
-      date.setDate(startDate.getDate() + i);
-      days.push(date);
-    }
-    return days;
-  };
-
-  const calendarDays = generateCalendarDays();
-  const today = new Date();
-
   return (
     <div className="appointments-page">
+      {/* Enhanced Header */}
       <div className="appointments-header">
         <div className="header-left">
-          <h1>Appointments</h1>
-          <p className="page-subtitle">Manage and schedule patient appointments</p>
+          <h1>Appointments Management</h1>
+          <p>Manage and schedule patient appointments</p>
+        </div>
+        
+        <div className="header-actions">
+          <button className="action-btn secondary">
+            <RefreshCw className="icon" />
+            Refresh
+          </button>
+          <button className="action-btn secondary">
+            <Download className="icon" />
+            Export
+          </button>
+          <button className="action-btn secondary">
+            <Printer className="icon" />
+            Print
+          </button>
+          <button className="action-btn primary" onClick={handleNewAppointment}>
+            <Plus className="icon" />
+            New Appointment
+          </button>
         </div>
       </div>
 
+      {/* Statistics Cards */}
       <div className="appointments-stats">
-        {stats.map((stat, index) => (
-          <div key={index} className="stat-card">
-            <div className="stat-value" style={{ color: stat.color }}>
-              {stat.value}
-            </div>
-            <div className="stat-label">{stat.label}</div>
+        <div className="stat-card total">
+          <div className="stat-icon">
+            <Calendar />
           </div>
-        ))}
+          <div className="stat-content">
+            <h3>{appointmentStats.total}</h3>
+            <p>Total Appointments</p>
+          </div>
+        </div>
+
+        <div className="stat-card today">
+          <div className="stat-icon">
+            <Clock />
+          </div>
+          <div className="stat-content">
+            <h3>{appointmentStats.today}</h3>
+            <p>Today's Appointments</p>
+          </div>
+        </div>
+
+        <div className="stat-card confirmed">
+          <div className="stat-icon">
+            <CheckCircle />
+          </div>
+          <div className="stat-content">
+            <h3>{appointmentStats.confirmed}</h3>
+            <p>Confirmed</p>
+          </div>
+        </div>
+
+        <div className="stat-card pending">
+          <div className="stat-icon">
+            <AlertCircle />
+          </div>
+          <div className="stat-content">
+            <h3>{appointmentStats.pending}</h3>
+            <p>Pending</p>
+          </div>
+        </div>
       </div>
 
+      {/* Search and Filter Controls */}
       <div className="appointments-controls">
-        <div className="date-selector">
-          <Calendar className="calendar-icon" />
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="date-input"
-          />
-        </div>
-
-        <div className="view-modes">
-          {['day', 'week', 'month'].map((mode) => (
-            <button
-              key={mode}
-              className={`view-btn ${viewMode === mode ? 'active' : ''}`}
-              onClick={() => setViewMode(mode)}
-            >
-              {mode.charAt(0).toUpperCase() + mode.slice(1)}
-            </button>
-          ))}
-        </div>
-
-        <div className="search-filter">
+        <div className="search-section">
           <div className="search-box">
             <Search className="search-icon" />
             <input
               type="text"
-              placeholder="Search appointments..."
+              placeholder="Search appointments, patients, doctors..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
             />
+          </div>
+        </div>
+
+        <div className="filter-section">
+          <select 
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="filter-select"
+          >
+            <option value="all">All Status</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="not-confirmed">Pending</option>
+            <option value="request-cancellation">Cancelled</option>
+            <option value="completed">Completed</option>
+          </select>
+
+          <select 
+            value={doctorFilter} 
+            onChange={(e) => setDoctorFilter(e.target.value)}
+            className="filter-select"
+          >
+            <option value="all">All Doctors</option>
+            {doctors.map(doctor => (
+              <option key={doctor.id} value={doctor.id}>{doctor.name}</option>
+            ))}
+          </select>
+
+          <button 
+            className={`filter-btn ${showFilters ? 'active' : ''}`}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter className="icon" />
+            Filters
+          </button>
+        </div>
+
+        <div className="view-controls">
+          <div className="view-toggle">
+            <button 
+              className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+              onClick={() => setViewMode('list')}
+            >
+              <List className="icon" />
+            </button>
+            <button 
+              className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
+            >
+              <Grid className="icon" />
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="appointments-content">
-        <div className="appointments-table-container">
-          <div className="table-header">
-            <div className="table-controls">
-              <div className="show-entries">
-                <span>Show:</span>
-                <select className="entries-select">
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-                </select>
-              </div>
-              <div className="table-actions">
-                <button className="refresh-btn">
-                  <Calendar size={16} />
-                  Refresh data
-                </button>
-                <button className="filter-btn">Show Filters</button>
-                <button className="download-btn">Download PDF</button>
-                {selectedAppointments.length > 0 && (
-                  <div className="bulk-actions">
-                    <button 
-                      className="bulk-btn confirm-bulk"
-                      onClick={() => handleBulkAction('confirm')}
-                    >
-                      <CheckCircle size={16} />
-                      Confirm Selected ({selectedAppointments.length})
-                    </button>
-                    <button 
-                      className="bulk-btn cancel-bulk"
-                      onClick={() => handleBulkAction('cancel')}
-                    >
-                      <XCircle size={16} />
-                      Cancel Selected
-                    </button>
-                    <button 
-                      className="bulk-btn delete-bulk"
-                      onClick={() => handleBulkAction('delete')}
-                    >
-                      <Trash2 size={16} />
-                      Delete Selected
-                    </button>
-                  </div>
-                )}
-              </div>
+      {/* Advanced Filters Panel */}
+      {showFilters && (
+        <div className="advanced-filters">
+          <div className="filter-row">
+            <div className="filter-group">
+              <label>Date Range</label>
+              <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
+            </div>
+            <div className="filter-group">
+              <label>Department</label>
+              <select>
+                <option value="all">All Departments</option>
+                <option value="cardiology">Cardiology</option>
+                <option value="general">General Medicine</option>
+                <option value="pediatrics">Pediatrics</option>
+                <option value="orthopedics">Orthopedics</option>
+              </select>
+            </div>
+            <div className="filter-group">
+              <label>Priority</label>
+              <select>
+                <option value="all">All Priorities</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
             </div>
           </div>
+        </div>
+      )}
 
+      {/* Bulk Actions */}
+      {selectedAppointments.length > 0 && (
+        <div className="bulk-actions">
+          <span>{selectedAppointments.length} appointment(s) selected</span>
+          <div className="bulk-buttons">
+            <button onClick={() => handleBulkAction('confirm')} className="bulk-btn confirm">
+              <CheckCircle className="icon" />
+              Confirm Selected
+            </button>
+            <button onClick={() => handleBulkAction('cancel')} className="bulk-btn cancel">
+              <XCircle className="icon" />
+              Cancel Selected
+            </button>
+            <button onClick={() => handleBulkAction('delete')} className="bulk-btn delete">
+              <Trash2 className="icon" />
+              Delete Selected
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Appointments List/Grid */}
+      <div className="appointments-content">
+        {viewMode === 'list' ? (
           <div className="appointments-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>
-                    <input
-                      type="checkbox"
-                      checked={selectAll}
-                      onChange={handleSelectAll}
-                      className="select-all-checkbox"
-                    />
-                  </th>
-                  <th>ID#</th>
-                  <th>Doctor's Name</th>
-                  <th>Visit type</th>
-                  <th>Date/Time</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredAppointments.map((appointment) => (
-                  <tr key={appointment.id}>
-                    <td>
+            <div className="table-header">
+              <div className="header-cell checkbox-cell">
+                <input
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                />
+              </div>
+              <div className="header-cell sortable" onClick={() => handleSort('patientName')}>
+                Patient {getSortIcon('patientName')}
+              </div>
+              <div className="header-cell sortable" onClick={() => handleSort('doctorName')}>
+                Doctor {getSortIcon('doctorName')}
+              </div>
+              <div className="header-cell sortable" onClick={() => handleSort('dateTime')}>
+                Date & Time {getSortIcon('dateTime')}
+              </div>
+              <div className="header-cell">Department</div>
+              <div className="header-cell">Visit Type</div>
+              <div className="header-cell sortable" onClick={() => handleSort('status')}>
+                Status {getSortIcon('status')}
+              </div>
+              <div className="header-cell">Actions</div>
+            </div>
+
+            <div className="table-body">
+              {filteredAndSortedAppointments.map(appointment => {
+                const { date, time } = formatDateTime(appointment.dateTime);
+                return (
+                  <div key={appointment.id} className="table-row">
+                    <div className="table-cell checkbox-cell">
                       <input
                         type="checkbox"
                         checked={selectedAppointments.includes(appointment.id)}
                         onChange={() => handleSelectAppointment(appointment.id)}
-                        className="appointment-checkbox"
                       />
-                    </td>
-                    <td className="appointment-id">{appointment.id}</td>
-                    <td className="doctor-name">{appointment.doctorName}</td>
-                    <td className="visit-type">{appointment.visitType}</td>
-                    <td className="date-time">{appointment.dateTime}</td>
-                    <td className="status">
-                      <span className={`status-badge ${appointment.statusType}`}>
+                    </div>
+                    <div className="table-cell">
+                      <div className="patient-info">
+                        <span className="patient-name">{appointment.patientName}</span>
+                        <span className="patient-id">{appointment.patientId}</span>
+                      </div>
+                    </div>
+                    <div className="table-cell">
+                      <div className="doctor-info">
+                        <span className="doctor-name">{appointment.doctorName}</span>
+                        <span className="doctor-dept">{appointment.department}</span>
+                      </div>
+                    </div>
+                    <div className="table-cell">
+                      <div className="datetime-info">
+                        <span className="date">{date}</span>
+                        <span className="time">{time}</span>
+                      </div>
+                    </div>
+                    <div className="table-cell">
+                      <span className="department">{appointment.department}</span>
+                    </div>
+                    <div className="table-cell">
+                      <span className="visit-type">{appointment.visitType}</span>
+                    </div>
+                    <div className="table-cell">
+                      <span className={`status ${getStatusClass(appointment.statusType)}`}>
                         {appointment.status}
                       </span>
-                    </td>
-                    <td className="actions">
-                      <div className="action-buttons">
+                      <span className={`priority ${getPriorityClass(appointment.priority)}`}>
+                        {appointment.priority}
+                      </span>
+                    </div>
+                    <div className="table-cell actions-cell">
+                      <button 
+                        className="action-btn-small view"
+                        onClick={() => handleViewAppointment(appointment)}
+                        title="View Details"
+                      >
+                        <Eye className="icon" />
+                      </button>
+                      <button 
+                        className="action-btn-small edit"
+                        onClick={() => handleEditAppointment(appointment)}
+                        title="Edit"
+                      >
+                        <Edit className="icon" />
+                      </button>
+                      {appointment.statusType === 'not-confirmed' && (
                         <button 
-                          className="action-btn view-btn"
-                          onClick={() => handleViewAppointment(appointment)}
-                          title="View"
+                          className="action-btn-small confirm"
+                          onClick={() => handleConfirmAppointment(appointment.id)}
+                          title="Confirm"
                         >
-                          <User size={16} />
+                          <CheckCircle className="icon" />
                         </button>
-                        <button 
-                          className="action-btn edit-btn"
-                          onClick={() => handleEditAppointment(appointment)}
-                          title="Edit"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button 
-                          className="action-btn cancel-btn"
-                          onClick={() => handleCancelAppointment(appointment.id)}
-                          title="Cancel"
-                        >
-                          <XCircle size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      )}
+                      <button 
+                        className="action-btn-small delete"
+                        onClick={() => handleDeleteAppointment(appointment.id)}
+                        title="Delete"
+                      >
+                        <Trash2 className="icon" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="appointments-grid">
+            {filteredAndSortedAppointments.map(appointment => {
+              const { date, time } = formatDateTime(appointment.dateTime);
+              return (
+                <div key={appointment.id} className="appointment-card">
+                  <div className="card-header">
+                    <div className="card-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={selectedAppointments.includes(appointment.id)}
+                        onChange={() => handleSelectAppointment(appointment.id)}
+                      />
+                    </div>
+                    <div className="card-id">#{appointment.id}</div>
+                    <div className="card-priority">
+                      <span className={`priority-badge ${getPriorityClass(appointment.priority)}`}>
+                        {appointment.priority}
+                      </span>
+                    </div>
+                  </div>
 
+                  <div className="card-content">
+                    <div className="patient-section">
+                      <h3>{appointment.patientName}</h3>
+                      <p className="patient-id">{appointment.patientId}</p>
+                    </div>
 
+                    <div className="appointment-details">
+                      <div className="detail-row">
+                        <User className="detail-icon" />
+                        <span>{appointment.doctorName}</span>
+                      </div>
+                      <div className="detail-row">
+                        <Stethoscope className="detail-icon" />
+                        <span>{appointment.department}</span>
+                      </div>
+                      <div className="detail-row">
+                        <Calendar className="detail-icon" />
+                        <span>{date}</span>
+                      </div>
+                      <div className="detail-row">
+                        <Clock className="detail-icon" />
+                        <span>{time}</span>
+                      </div>
+                      <div className="detail-row">
+                        <MapPin className="detail-icon" />
+                        <span>{appointment.roomNumber}</span>
+                      </div>
+                    </div>
+
+                    <div className="visit-info">
+                      <p className="visit-type">{appointment.visitType}</p>
+                      <p className="symptoms">{appointment.symptoms}</p>
+                    </div>
+                  </div>
+
+                  <div className="card-footer">
+                    <div className="status-section">
+                      <span className={`status ${getStatusClass(appointment.statusType)}`}>
+                        {appointment.status}
+                      </span>
+                    </div>
+
+                    <div className="card-actions">
+                      <button 
+                        className="action-btn-small view"
+                        onClick={() => handleViewAppointment(appointment)}
+                      >
+                        <Eye className="icon" />
+                      </button>
+                      <button 
+                        className="action-btn-small edit"
+                        onClick={() => handleEditAppointment(appointment)}
+                      >
+                        <Edit className="icon" />
+                      </button>
+                      {appointment.statusType === 'not-confirmed' && (
+                        <button 
+                          className="action-btn-small confirm"
+                          onClick={() => handleConfirmAppointment(appointment.id)}
+                        >
+                          <CheckCircle className="icon" />
+                        </button>
+                      )}
+                      <button 
+                        className="action-btn-small delete"
+                        onClick={() => handleDeleteAppointment(appointment.id)}
+                      >
+                        <Trash2 className="icon" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* New Appointment Modal */}
-      {showNewAppointmentModal && (
-        <div className="modal-overlay" onClick={closeModals}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      {/* Appointment Details Modal */}
+      {showAppointmentDetails && selectedAppointment && (
+        <div className="modal-overlay" onClick={() => setShowAppointmentDetails(false)}>
+          <div className="modal-content appointment-details-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>New Appointment</h2>
-              <button className="close-btn" onClick={closeModals}>
-                <XCircle size={20} />
+              <h2>Appointment Details</h2>
+              <button 
+                className="close-btn"
+                onClick={() => setShowAppointmentDetails(false)}
+              >
+                ×
               </button>
             </div>
+
             <div className="modal-body">
-              <div className="appointment-form">
-                <div className="form-group">
-                  <label>Patient Name</label>
-                  <input type="text" placeholder="Enter patient name" />
+              <div className="details-grid">
+                <div className="detail-section">
+                  <h3>Patient Information</h3>
+                  <div className="info-grid">
+                    <div className="info-item">
+                      <label>Name:</label>
+                      <span>{selectedAppointment.patientName}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Patient ID:</label>
+                      <span>{selectedAppointment.patientId}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Contact:</label>
+                      <span>{selectedAppointment.contactNumber}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Email:</label>
+                      <span>{selectedAppointment.email}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Insurance:</label>
+                      <span>{selectedAppointment.insurance}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>Date</label>
-                  <input type="date" defaultValue={selectedDate} />
+
+                <div className="detail-section">
+                  <h3>Appointment Information</h3>
+                  <div className="info-grid">
+                    <div className="info-item">
+                      <label>Doctor:</label>
+                      <span>{selectedAppointment.doctorName}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Department:</label>
+                      <span>{selectedAppointment.department}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Date & Time:</label>
+                      <span>{formatDateTime(selectedAppointment.dateTime).date} at {formatDateTime(selectedAppointment.dateTime).time}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Duration:</label>
+                      <span>{selectedAppointment.duration} minutes</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Room:</label>
+                      <span>{selectedAppointment.roomNumber}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Type:</label>
+                      <span>{selectedAppointment.appointmentType}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>Time</label>
-                  <input type="time" />
-                </div>
-                <div className="form-group">
-                  <label>Appointment Type</label>
-                  <select>
-                    <option>General Checkup</option>
-                    <option>Consultation</option>
-                    <option>Dental Cleaning</option>
-                    <option>Physical Therapy</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Notes</label>
-                  <textarea placeholder="Additional notes..."></textarea>
+
+                <div className="detail-section full-width">
+                  <h3>Medical Information</h3>
+                  <div className="info-grid">
+                    <div className="info-item">
+                      <label>Visit Type:</label>
+                      <span>{selectedAppointment.visitType}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Priority:</label>
+                      <span className={`priority-badge ${getPriorityClass(selectedAppointment.priority)}`}>
+                        {selectedAppointment.priority}
+                      </span>
+                    </div>
+                    <div className="info-item full-width">
+                      <label>Symptoms:</label>
+                      <span>{selectedAppointment.symptoms}</span>
+                    </div>
+                    <div className="info-item full-width">
+                      <label>Notes:</label>
+                      <span>{selectedAppointment.notes}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="modal-actions">
-                <button className="btn btn-outline" onClick={closeModals}>Cancel</button>
-                <button className="btn btn-primary">Schedule Appointment</button>
-              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button 
+                className="btn secondary"
+                onClick={() => setShowAppointmentDetails(false)}
+              >
+                Close
+              </button>
+              <button 
+                className="btn primary"
+                onClick={() => {
+                  setShowAppointmentDetails(false);
+                  handleEditAppointment(selectedAppointment);
+                }}
+              >
+                Edit Appointment
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Edit Appointment Modal */}
-      {showEditModal && selectedAppointment && (
-        <div className="modal-overlay" onClick={closeModals}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Edit Appointment</h2>
-              <button className="close-btn" onClick={closeModals}>
-                <XCircle size={20} />
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="appointment-form">
-                <div className="form-group">
-                  <label>Doctor Name</label>
-                  <input type="text" defaultValue={selectedAppointment.doctorName} />
-                </div>
-                <div className="form-group">
-                  <label>Date/Time</label>
-                  <input type="text" defaultValue={selectedAppointment.dateTime} />
-                </div>
-                <div className="form-group">
-                  <label>Visit Type</label>
-                  <select defaultValue={selectedAppointment.visitType}>
-                    <option>New symptom visit</option>
-                    <option>Follow up visit</option>
-                    <option>Chronic care visit</option>
-                    <option>General Checkup</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Status</label>
-                  <select defaultValue={selectedAppointment.statusType}>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="not-confirmed">Not Confirmed</option>
-                    <option value="request-cancellation">Request Cancellation</option>
-                  </select>
-                </div>
-              </div>
-              <div className="modal-actions">
-                <button className="btn btn-outline" onClick={closeModals}>Cancel</button>
-                <button className="btn btn-primary">Update Appointment</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Confirm Dialog */}
+      {/* Confirmation Dialog */}
       {showConfirmDialog && (
-        <div className="modal-overlay" onClick={closeModals}>
-          <div className="modal-content confirm-dialog" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal-content confirm-dialog">
             <div className="modal-header">
-              <h2>Confirm Action</h2>
-              <button className="close-btn" onClick={closeModals}>
-                <XCircle size={20} />
-              </button>
+              <h3>Confirm Action</h3>
             </div>
             <div className="modal-body">
-              <p>Are you sure you want to cancel this appointment?</p>
-              <div className="modal-actions">
-                <button className="btn btn-outline" onClick={closeModals}>No, Keep It</button>
-                <button className="btn btn-danger" onClick={confirmAction}>Yes, Cancel</button>
-              </div>
+              <p>Are you sure you want to perform this action? This cannot be undone.</p>
+            </div>
+            <div className="modal-footer">
+              <button 
+                className="btn secondary"
+                onClick={() => setShowConfirmDialog(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn danger"
+                onClick={confirmAction}
+              >
+                Confirm
+              </button>
             </div>
           </div>
         </div>

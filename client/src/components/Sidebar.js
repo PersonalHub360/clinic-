@@ -6,8 +6,6 @@ import {
   CreditCard, 
   UserCheck, 
   Activity, 
-  BarChart3, 
-  HelpCircle, 
   Settings, 
   FileText,
   CheckCircle,
@@ -27,8 +25,6 @@ const Sidebar = ({ currentPage, onPageChange }) => {
   ];
 
   const otherMenuItems = [
-    { icon: BarChart3, label: 'Statistics', page: 'Statistics' },
-    { icon: HelpCircle, label: 'Help & Center', page: 'Help' },
     { icon: Settings, label: 'Settings', page: 'Settings' },
     { icon: FileText, label: 'Report', page: 'Report' }
   ];

@@ -1,99 +1,342 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  CreditCard, 
-  DollarSign, 
-  TrendingUp, 
-  TrendingDown, 
   Search, 
   Filter, 
+  Plus, 
   Download, 
-  Eye, 
-  Send, 
-  CheckCircle, 
+  Upload, 
+  DollarSign, 
   Clock, 
-  AlertCircle,
-  Calendar,
-  User,
-  Receipt,
-  X,
-  Plus,
-  Edit,
-  Trash2
+  AlertCircle, 
+  TrendingUp, 
+  CheckCircle, 
+  X, 
+  Eye, 
+  Edit, 
+  Trash2, 
+  Send, 
+  CreditCard, 
+  Banknote, 
+  Smartphone, 
+  Building2, 
+  Calendar, 
+  User, 
+  Receipt, 
+  FileText, 
+  Printer, 
+  RefreshCw, 
+  MoreHorizontal, 
+  ArrowUpDown, 
+  ChevronDown, 
+  Settings, 
+  PieChart, 
+  BarChart3, 
+  TrendingDown, 
+  Wallet, 
+  Target, 
+  Activity 
 } from 'lucide-react';
 import './PaymentsPage.css';
 
 const PaymentsPage = () => {
+  // Enhanced state management
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [dateRange, setDateRange] = useState('this-month');
-  
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState('all');
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [viewMode, setViewMode] = useState('list');
+  const [selectedTimeRange, setSelectedTimeRange] = useState('thisMonth');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [selectedPayments, setSelectedPayments] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
   // Modal states
   const [showNewInvoiceModal, setShowNewInvoiceModal] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showInvoiceDetailsModal, setShowInvoiceDetailsModal] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState(null);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showReportsModal, setShowReportsModal] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null);
 
-  // Sample payments data
-  const payments = [
-    {
-      id: 'INV-001',
-      patient: {
-        name: 'Sarah Johnson',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face'
-      },
-      amount: 250.00,
-      service: 'General Consultation',
-      date: '2024-01-15',
-      dueDate: '2024-01-30',
-      status: 'paid',
-      paymentMethod: 'Credit Card',
-      transactionId: 'TXN-12345'
+  // Enhanced mock data
+  const [paymentsData, setPaymentsData] = useState({
+    summary: {
+      totalRevenue: 125450.75,
+      pendingAmount: 18750.25,
+      overdueAmount: 4320.50,
+      thisMonthRevenue: 32180.00,
+      totalTransactions: 1247,
+      averageTransaction: 100.52,
+      paymentMethods: {
+        creditCard: 45.2,
+        cash: 28.7,
+        insurance: 18.5,
+        bankTransfer: 7.6
+      }
     },
-    {
-      id: 'INV-002',
-      patient: {
-        name: 'Michael Chen',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face'
+    recentActivity: [
+      {
+        id: 'ACT001',
+        type: 'payment_received',
+        patient: 'Sarah Johnson',
+        amount: 250.00,
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+        method: 'Credit Card'
       },
-      amount: 180.00,
-      service: 'Dental Cleaning',
-      date: '2024-01-14',
-      dueDate: '2024-01-29',
-      status: 'pending',
-      paymentMethod: 'Insurance',
-      transactionId: null
-    },
-    {
-      id: 'INV-003',
-      patient: {
-        name: 'Emily Davis',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face'
+      {
+        id: 'ACT002',
+        type: 'refund_processed',
+        patient: 'Michael Brown',
+        amount: -75.00,
+        timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
+        method: 'Bank Transfer'
       },
-      amount: 320.00,
-      service: 'Specialist Consultation',
-      date: '2024-01-13',
-      dueDate: '2024-01-28',
-      status: 'overdue',
-      paymentMethod: 'Cash',
-      transactionId: null
-    },
-    {
-      id: 'INV-004',
-      patient: {
-        name: 'Robert Wilson',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face'
+      {
+        id: 'ACT003',
+        type: 'invoice_sent',
+        patient: 'Emily Davis',
+        amount: 180.00,
+        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        method: 'Email'
+      }
+    ],
+    payments: [
+      {
+        id: 'INV-2024-001',
+        patient: {
+          id: 'P001',
+          name: 'Sarah Johnson',
+          email: 'sarah.johnson@email.com',
+          phone: '+1 (555) 123-4567',
+          insurance: 'Blue Cross Blue Shield'
+        },
+        amount: 450.00,
+        service: 'General Consultation + Lab Tests',
+        date: '2024-01-15',
+        dueDate: '2024-02-15',
+        status: 'paid',
+        paymentMethod: 'Credit Card',
+        transactionId: 'TXN-CC-001',
+        doctor: 'Dr. Smith',
+        department: 'General Medicine',
+        insuranceClaim: {
+          claimNumber: 'CLM-2024-001',
+          status: 'approved',
+          coveredAmount: 350.00,
+          patientResponsibility: 100.00
+        },
+        paymentHistory: [
+          {
+            date: '2024-01-16',
+            amount: 450.00,
+            method: 'Credit Card',
+            reference: 'TXN-CC-001'
+          }
+        ]
       },
-      amount: 150.00,
-      service: 'Physical Therapy',
-      date: '2024-01-12',
-      dueDate: '2024-01-27',
-      status: 'paid',
-      paymentMethod: 'Debit Card',
-      transactionId: 'TXN-12346'
+      {
+        id: 'INV-2024-002',
+        patient: {
+          id: 'P002',
+          name: 'Michael Brown',
+          email: 'michael.brown@email.com',
+          phone: '+1 (555) 234-5678',
+          insurance: 'Aetna'
+        },
+        amount: 750.00,
+        service: 'Dental Cleaning + X-Ray',
+        date: '2024-01-14',
+        dueDate: '2024-02-14',
+        status: 'pending',
+        paymentMethod: null,
+        transactionId: null,
+        doctor: 'Dr. Wilson',
+        department: 'Dentistry',
+        insuranceClaim: {
+          claimNumber: 'CLM-2024-002',
+          status: 'pending',
+          coveredAmount: 600.00,
+          patientResponsibility: 150.00
+        },
+        paymentHistory: []
+      },
+      {
+        id: 'INV-2024-003',
+        patient: {
+          id: 'P003',
+          name: 'Emily Davis',
+          email: 'emily.davis@email.com',
+          phone: '+1 (555) 345-6789',
+          insurance: 'United Healthcare'
+        },
+        amount: 320.00,
+        service: 'Physical Therapy Session',
+        date: '2024-01-10',
+        dueDate: '2024-01-25',
+        status: 'overdue',
+        paymentMethod: null,
+        transactionId: null,
+        doctor: 'Dr. Johnson',
+        department: 'Physical Therapy',
+        insuranceClaim: {
+          claimNumber: 'CLM-2024-003',
+          status: 'rejected',
+          coveredAmount: 0.00,
+          patientResponsibility: 320.00
+        },
+        paymentHistory: []
+      }
+    ]
+  });
+
+  // Calculate statistics
+  const calculateStats = () => {
+    const { payments } = paymentsData;
+    const paidPayments = payments.filter(p => p.status === 'paid');
+    const pendingPayments = payments.filter(p => p.status === 'pending');
+    const overduePayments = payments.filter(p => p.status === 'overdue');
+
+    return {
+      totalRevenue: paidPayments.reduce((sum, p) => sum + p.amount, 0),
+      pendingAmount: pendingPayments.reduce((sum, p) => sum + p.amount, 0),
+      overdueAmount: overduePayments.reduce((sum, p) => sum + p.amount, 0),
+      totalTransactions: paidPayments.length,
+      averageTransaction: paidPayments.length > 0 ? paidPayments.reduce((sum, p) => sum + p.amount, 0) / paidPayments.length : 0
+    };
+  };
+
+  // Filter and sort payments
+  const getFilteredPayments = () => {
+    let filtered = paymentsData.payments.filter(payment => {
+      const matchesSearch = payment.patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           payment.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           payment.service.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === 'all' || payment.status === statusFilter;
+      const matchesPaymentMethod = paymentMethodFilter === 'all' || payment.paymentMethod === paymentMethodFilter;
+      
+      let matchesDateRange = true;
+      if (dateRange.start && dateRange.end) {
+        const paymentDate = new Date(payment.date);
+        const startDate = new Date(dateRange.start);
+        const endDate = new Date(dateRange.end);
+        matchesDateRange = paymentDate >= startDate && paymentDate <= endDate;
+      }
+      
+      return matchesSearch && matchesStatus && matchesPaymentMethod && matchesDateRange;
+    });
+
+    // Sort payments
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case 'date':
+          aValue = new Date(a.date);
+          bValue = new Date(b.date);
+          break;
+        case 'amount':
+          aValue = a.amount;
+          bValue = b.amount;
+          break;
+        case 'patient':
+          aValue = a.patient.name.toLowerCase();
+          bValue = b.patient.name.toLowerCase();
+          break;
+        case 'status':
+          aValue = a.status;
+          bValue = b.status;
+          break;
+        default:
+          return 0;
+      }
+      
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    return filtered;
+  };
+
+  // Event handlers
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    // Simulate API call
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedPayments([]);
+    } else {
+      setSelectedPayments(getFilteredPayments().map(p => p.id));
     }
-  ];
+    setSelectAll(!selectAll);
+  };
+
+  const handleSelectPayment = (paymentId) => {
+    if (selectedPayments.includes(paymentId)) {
+      setSelectedPayments(selectedPayments.filter(id => id !== paymentId));
+    } else {
+      setSelectedPayments([...selectedPayments, paymentId]);
+    }
+  };
+
+  const handleBulkAction = (action) => {
+    setConfirmAction({
+      type: action,
+      payments: selectedPayments,
+      message: `Are you sure you want to ${action} ${selectedPayments.length} selected payment(s)?`
+    });
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'paid':
+        return <CheckCircle size={16} className="status-icon paid" />;
+      case 'pending':
+        return <Clock size={16} className="status-icon pending" />;
+      case 'overdue':
+        return <AlertCircle size={16} className="status-icon overdue" />;
+      default:
+        return null;
+    }
+  };
+
+  const getPaymentMethodIcon = (method) => {
+    switch (method) {
+      case 'Credit Card':
+        return <CreditCard size={16} />;
+      case 'Cash':
+        return <Banknote size={16} />;
+      case 'Bank Transfer':
+        return <Building2 size={16} />;
+      case 'Mobile Payment':
+        return <Smartphone size={16} />;
+      default:
+        return <Wallet size={16} />;
+    }
+  };
+
+  const getStatusClass = (status) => {
+    return `status-${status}`;
+  };
+
+  const getPriorityClass = (status) => {
+    if (status === 'overdue') return 'priority-high';
+    if (status === 'pending') return 'priority-medium';
+    return 'priority-low';
+  };
 
   const stats = [
     {
@@ -157,28 +400,9 @@ const PaymentsPage = () => {
     }
   ];
 
-  const filteredPayments = payments.filter(payment => {
-    const matchesSearch = payment.patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         payment.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         payment.service.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || payment.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  });
+  const filteredPayments = getFilteredPayments();
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'paid':
-        return <CheckCircle size={16} className="status-icon paid" />;
-      case 'pending':
-        return <Clock size={16} className="status-icon pending" />;
-      case 'overdue':
-        return <AlertCircle size={16} className="status-icon overdue" />;
-      default:
-        return null;
-    }
-  };
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   // Payment management functions
   const handleNewInvoice = () => {

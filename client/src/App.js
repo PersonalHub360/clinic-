@@ -11,6 +11,7 @@ import ActivityPage from './components/ActivityPage';
 import StatisticsPage from './components/StatisticsPage';
 import SettingsPage from './components/SettingsPage';
 import BillManagement from './components/BillManagement';
+import ReportsPage from './components/ReportsPage';
 import Auth from './components/Auth';
 import AddPatientModal from './components/AddPatientModal';
 import axios from 'axios';
@@ -123,6 +124,8 @@ function App() {
         return <StatisticsPage />;
       case 'BillManagement':
         return <BillManagement />;
+      case 'Report':
+        return <ReportsPage />;
       case 'Settings':
         return <SettingsPage />;
       default:
